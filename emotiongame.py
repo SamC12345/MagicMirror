@@ -129,7 +129,7 @@ def startGame():
     random.shuffle(emotions)
 
 
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(1)
     val = " "
     while not crashed:
         _, frame = cap.read()
@@ -208,6 +208,7 @@ def startGame():
     disp.blit(a, aRect)
     pygame.display.update()
     time.sleep(2)
+    cap.release()
     pygame.quit()
 
 if __name__ == "__main__":

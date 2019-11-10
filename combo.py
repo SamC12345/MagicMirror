@@ -28,7 +28,7 @@ class Item:
             self.y = display_height
             self.yvel = random.randint(-22,-19)
             self.xvel = random.randint(-6,-3)
-        if image != "pineapple.png" and image != "pear.png":
+        if image != "pineapple.png" and image != "shrooms.png":
             self.width=200
             self.height=200
         else:
@@ -169,9 +169,11 @@ def game(xyq, otherxyq):
         if newi == 5 :
             objects.add(Item("pineapple.png"))
         elif newi == 8:
-            objects.add(Item("pear.png"))
+            objects.add(Item("shrooms.png"))
+        elif newi == 9:
+            objects.add(Item("tomato.png"))
         elif newi == 10:
-            objects.add(Item("orange.png"))
+            objects.add(Item("peppparooooooni.png"))
         elif newi == 11:
             objects.add(Item("bomb.png"))
 
