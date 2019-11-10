@@ -212,8 +212,8 @@ if __name__ == "__main__":
     log2.pack()
 
     #Score Label
-    score = Label(left,font=("times", 50, "bold"), bg="black", fg="white", text="High Score:\n0")
-    score.pack(anchor=E)
+    # score = Label(left,font=("times", 50, "bold"), bg="black", fg="white", text="High Score:\n0")
+    # score.pack(anchor=E)
     #Weather stuff
     # image = ImageTk.PhotoImage(Image.open("{}.png".format(val['icon'])))
     # canvas = Canvas(right, width = 300, height = 300)
