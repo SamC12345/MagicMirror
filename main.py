@@ -13,6 +13,9 @@ from azure.cognitiveservices.vision.face import FaceClient
 from msrest.authentication import CognitiveServicesCredentials
 from azure.cognitiveservices.vision.face.models import TrainingStatusType, Person, SnapshotObjectType, OperationStatusType
 import combo, emotiongame
+import azure.cognitiveservices.speech as speechsdk
+from azure.cognitiveservices.language.textanalytics import TextAnalyticsClient
+from msrest.authentication import CognitiveServicesCredentials
 
 sayings = {
     'disgust' : 'You look disgusted.\nDon\'t be.',
@@ -54,6 +57,15 @@ def set_emotion(emotion):
 key = "f4213b760a1e447c84cfaaa8703ad82a"
 endpoint = "https://centralus.api.cognitive.microsoft.com/"
 face_client = FaceClient(endpoint, CognitiveServicesCredentials(key))
+speech_key, service_region = "23c5f1b4958942b889c263fb8baee340", "centralus"
+speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
+subscription_key ="72974b51685d4b6d93d91a38de4d0361"
+
+def authenticateClient():
+    credentials = CognitiveServicesCredentials(subscription_key)
+    text_analytics_client = TextAnalyticsClient(
+        endpoint=endpoint, credentials=credentials)
+    return text_analytics_client
 
 #function to check if person in image
 def test_image():
@@ -216,5 +228,41 @@ if __name__ == "__main__":
 
     m.bind('q', qpress)
     m.bind('w', wpress)
+    num = Label(mid, font=("times", 30, "bold"), bg="black", fg="white", text="Recognizing speech")
+    num.config(anchor=CENTER)
+    num.pack()
+    m.update_idletasks()
+    m.update()
+    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config)
+    def recognizeSpeech():
+        result = speech_recognizer.recognize_once()
+        if result.reason == speechsdk.ResultReason.RecognizedSpeech:
+            print("Recognized: {}".format(result.text))
+            client = authenticateClient()
+            try:
+                documents = [
+                    {"id": "1", "language": "en", "text": result.text},
+                ]
+
+                response = client.sentiment(documents=documents)
+                for document in response.documents:
+                    print("Document Id: ", document.id, ", Sentiment Score: ",
+                        "{:.2f}".format(document.score))
+
+            except Exception as err:
+                print("Encountered exception. {}".format(err))
+        elif result.reason == speechsdk.ResultReason.NoMatch:
+            print("No speech could be recognized: {}".format(result.no_match_details))
+        elif result.reason == speechsdk.ResultReason.Canceled:
+            cancellation_details = result.cancellation_details
+            print("Speech Recognition canceled: {}".format(cancellation_details.reason))
+            if cancellation_details.reason == speechsdk.CancellationReason.Error:
+                print("Error details: {}".format(cancellation_details.error_details))
+    
+    threading.Thread(target=recognizeSpeech).start()
+    num.destroy()
+
+
+
 
     m.mainloop()
