@@ -6,7 +6,7 @@ import cv2
 import sys, uuid, requests
 from urllib.parse import urlparse
 from io import BytesIO
-from PIL import Image, ImageDraw
+# from PIL import Image, ImageDraw
 from azure.cognitiveservices.vision.face import FaceClient
 from msrest.authentication import CognitiveServicesCredentials
 import asyncio, io, glob, os
