@@ -23,7 +23,6 @@ sayings = {
     'neutral' : "Show some emotion"
 }
 
-
 #Three global variables 
 recognized = False
 message = "Log in with face"
@@ -89,6 +88,10 @@ def test_image():
                 elif person.candidates[0].person_id == "dbde91bc-673d-4c03-9c03-8fb2072478ce":
                     message = 'Welcome Sam'
                     return True
+                elif person.candidates[0].person_id == "472c66f3-9508-47d1-bec3-33dea996b5e7":
+                    message = 'Welcome David'
+                    return True
+
             else:
                 message = 'Person not recognized'
                 print("Person can't be identified")
@@ -119,6 +122,7 @@ def find_face():
         # Code for bounding boxes on faces
         # for (x, y, w, h) in faces:
         #     cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
         if key == 27:
             break
     # Change logging message on screen through global var
