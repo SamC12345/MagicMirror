@@ -306,8 +306,8 @@ def getFrames(frameQueue):
     cap.release()
     return
 
-
-if __name__=="__main__":
+def startFruitNinja():
+    print("d")
     xyq=Queue()
     otherxyq=Queue()
     frameQueue = Queue()
@@ -319,6 +319,9 @@ if __name__=="__main__":
     # Process(target = video, args=(xyq,frameQueue,)).start()
     # Process(target = video, args=(xyq,frameQueue,)).start()
     # Process(target = video, args=(xyq,frameQueue,)).start()
+
+if __name__=="__main__":
+    startFruitNinja()
 # video()
 
 

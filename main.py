@@ -12,12 +12,12 @@ from urllib.parse import urlparse
 from azure.cognitiveservices.vision.face import FaceClient
 from msrest.authentication import CognitiveServicesCredentials
 from azure.cognitiveservices.vision.face.models import TrainingStatusType, Person, SnapshotObjectType, OperationStatusType
-
+import combo
 
 sayings = {
     'disgust' : 'You look disgusted.\nDon\'t be.',
     'anger' : "Life is beautiful. Don't be angry",
-    'happiness' : "You're looking happy today.\nThat's great.\nLife is amazing",
+    'happiness' : "You're looking happy today.\nThat's great.\nLife is amazing\nJust Like you",
     'sadness' : "Don't be so sad.\nBe glad!",
     'surprise' : "Surprise motherf*ker!",
     'neutral' : "Show some emotion"
@@ -133,8 +133,6 @@ def find_face():
     cv2.destroyAllWindows()
 
 
-
-
 #Main code to display UI
 url = "https://api.darksky.net/forecast/cccddf3bdea1714ab4fb33a10653811f/40.7357,-74.1724"
 response = requests.get(url)
@@ -196,13 +194,20 @@ temperature2.pack()
 myvar=Label(m, text = time_string, compound = CENTER)
 
 myvar.place(x=0, y=0)
-print("hi")
+print("hifvojk")
 #Tick clock
 tick()
 
 #Start thread to detect face and update login message
 t1 = threading.Thread(target=find_face)
 t1.start()
+
+def key(event):
+    if event.char == 'q':
+        print(event.char)
+        combo.startFruitNinja()
+
+m.bind_all('<Key>', key)
 
 m.mainloop()
 
