@@ -21,12 +21,12 @@ class Item:
         if random.randint(0,1)==0:#move right
             self.x = random.randint(0, int(display_width/2))
             self.y = display_height
-            self.yvel = random.randint(-25,-20)
+            self.yvel = random.randint(-22,17)
             self.xvel = random.randint(3,6)
         else:
             self.x = random.randint(int(display_width/2), display_width)
             self.y = display_height
-            self.yvel = random.randint(-25,-20)
+            self.yvel = random.randint(-22,-17)
             self.xvel = random.randint(-6,-3)
         if image != "pineapple.png" and image != "pear.png":
             self.width=200
@@ -51,6 +51,24 @@ class Item:
         else:
             return False
 
+class Explosion:
+    def __init__(self,x,y):
+        self.x = x
+        self.y = y
+        self.width=200
+        self.height=200
+        image = pygame.image.load("nuke.png")
+        image = pygame.transform.scale(image, (self.width, self.height))
+        self.image = image
+        
+
+    def decreaseSize(self):
+        self.width -=1
+        self.height -=1
+        if self.width==0 or self.height==0:
+            return True
+        self.image = pygame.transform.scale(self.image, (self.width, self.height))
+        return False
 
 
 def game(xyq, otherxyq):
@@ -139,6 +157,7 @@ def game(xyq, otherxyq):
     
     crashed = False
     objects = set()
+    nukes=set()
     score=0
     while not crashed:
         newi = random.randint(0,200)
@@ -157,8 +176,8 @@ def game(xyq, otherxyq):
             objects.add(Item("bomb.png"))
                
         disp.fill((0, 0, 0))
-        disp.blit(cursor, (cursorx,cursory))
-        disp.blit(othercursor, (othercursorx,othercursory))
+        # disp.blit(cursor, (cursorx,cursory))
+        # disp.blit(othercursor, (othercursorx,othercursory))
         text = font.render('Score: '+str(score), True, green, black) 
         textRect = text.get_rect()
         textRect.center = (display_width // 2,display_height // 2) 
@@ -177,8 +196,19 @@ def game(xyq, otherxyq):
                 score+=1
                 removeItems.append(item)
         for item in removeItems:
+            if item.isCollided(cursorx,cursory) or item.isCollided(othercursorx,othercursory):
+                nukes.add(Explosion(item.x, item.y))
             objects.remove(item)
+
+        removeItems = []
+        for item in nukes:
+            if item.decreaseSize():
+                removeItems.append(item)
+            disp.blit(item.image, (item.x, item.y))
         
+        for item in removeItems:
+            nukes.remove(item)
+
         if not xyq.empty():
             # avgx, avgy=0,0
             # count=0
@@ -193,8 +223,9 @@ def game(xyq, otherxyq):
             # # avgy=int((avgy+cursory)/2)
             # cursorx,cursory=avgx,avgy
             newCord=cameraCordtoGameCord(xyq.get())
-            cursorx=newCord[0]
-            cursory=newCord[1]
+            if (math.pow((cursorx-newCord[0]),2) + math.pow((cursory-newCord[1]),2))>1600:
+                cursorx=newCord[0]
+                cursory=newCord[1]
             # print("----")
             # print(newCord)
             # print(cursorx,cursory)
@@ -202,8 +233,9 @@ def game(xyq, otherxyq):
 
         if not otherxyq.empty():
             newCord=cameraCordtoGameCord(otherxyq.get())
-            othercursorx=newCord[0]
-            othercursory=newCord[1]
+            if (math.pow((othercursorx-newCord[0]),2) + math.pow((othercursory-newCord[1]),2))>1600:
+                othercursorx=newCord[0]
+                othercursory=newCord[1]
             print("----")
             print(newCord)
             print(othercursorx,othercursory)
