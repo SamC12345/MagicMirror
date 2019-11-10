@@ -5,7 +5,7 @@ import time
 import requests
 import json
 # from PIL import ImageTk, Image
-import threading
+import threading, _thread
 import cv2
 import asyncio, io, glob, os, uuid
 from urllib.parse import urlparse
@@ -25,6 +25,8 @@ sayings = {
     'surprise' : "You look surprised! What's Happening?",
     'neutral' : ""#Show some emotion"
 }
+
+
 
 #Three global variables
 recognized = False
@@ -144,17 +146,21 @@ def find_face():
     cap.release()
     cv2.destroyAllWindows()
 
-def qpress(event):
+def open_fruit_ninja(event):
     # if event.char == 'q':
     print("Starting Fruit Ninja")
     combo.startFruitNinja()
 
-def wpress(event):
+def open_emotion_game(event):
     # if event.char == 'q':
     print("Starting Fruit Ninja")
     emotiongame.startGame()
 
 if __name__ == "__main__":
+    KEYWORDS = {
+        "mirror pizza ninja" : combo.startFruitNinja,
+        "mirror emotion game" : emotiongame.startGame
+    }
     #Main code to display UI
     url = "https://api.darksky.net/forecast/cccddf3bdea1714ab4fb33a10653811f/40.7357,-74.1724"
     response = requests.get(url)
@@ -226,8 +232,8 @@ if __name__ == "__main__":
 
 
 
-    m.bind('q', qpress)
-    m.bind('w', wpress)
+    m.bind('q', open_fruit_ninja)
+    m.bind('w', open_emotion_game)
     num = Label(mid, font=("times", 30, "bold"), bg="black", fg="white", text="Recognizing speech")
     num.config(anchor=CENTER)
     num.pack()
@@ -258,11 +264,34 @@ if __name__ == "__main__":
             print("Speech Recognition canceled: {}".format(cancellation_details.reason))
             if cancellation_details.reason == speechsdk.CancellationReason.Error:
                 print("Error details: {}".format(cancellation_details.error_details))
-    
-    threading.Thread(target=recognizeSpeech).start()
+
+    # threading.Thread(target=recognizeSpeech).start()
+
+    def listen():
+        while True:
+            try:
+                result = speech_recognizer.recognize_once()
+                print(result.text)
+                if result.reason == speechsdk.ResultReason.RecognizedSpeech:
+                    print("Recognized: {}".format(result.text))
+                    # client = authenticateClient()
+                    try:
+                        for keyword in KEYWORDS.keys():
+                            if keyword in result.text.lower():
+                                print(f"KEYWORD FOUND {keyword}")
+                                KEYWORDS[keyword]()
+                    except Exception as err:
+                        print("Encountered exception. {}".format(err))
+                print("BBBBBBBBBBBBBBBBBBB")
+                # time.sleep(0.2)
+            except:
+                raise
+
+
+
+
+    threading.Thread(target=listen).start()
+
     num.destroy()
-
-
-
 
     m.mainloop()
