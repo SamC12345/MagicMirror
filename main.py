@@ -228,7 +228,12 @@ if __name__ == "__main__":
 
     m.bind('q', qpress)
     m.bind('w', wpress)
-
+    num = Label(mid, font=("times", 30, "bold"), bg="black", fg="white", text="Recognizing speech")
+    num.config(anchor=CENTER)
+    num.pack()
+    m.update_idletasks()
+    m.update()
+    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config)
     def recognizeSpeech():
         result = speech_recognizer.recognize_once()
         if result.reason == speechsdk.ResultReason.RecognizedSpeech:
