@@ -4,6 +4,7 @@ import sys
 import time
 import requests
 import json
+from datetime import datetime
 # from PIL import ImageTk, Image
 import threading, _thread
 import cv2
@@ -18,12 +19,12 @@ from azure.cognitiveservices.language.textanalytics import TextAnalyticsClient
 from msrest.authentication import CognitiveServicesCredentials
 
 sayings = {
-    'disgust' : 'You look disgusted.\nDon\'t be.',
-    'anger' : "Life is beautiful. Don't be angry",
-    'happiness' : "You're looking happy today.\nThat's great.\nLife is amazing\nJust Like you",
-    'sadness' : "Don't be so sad.\nBe glad!",
-    'surprise' : "You look surprised! What's Happening?",
-    'neutral' : ""#Show some emotion"
+    'disgust' : "Are you okay?\nYou don't seem very please",
+    'anger' : "You seem angry? Do you want to talk about it?",
+    'happiness' : "You're looking happy today.\nWhat happened?",
+    'sadness' : "You look so sad :(\nWhat's going on?",
+    'surprise' : "Ooh, surprise surprise, what happened?",
+    'neutral' : "How are you feeling today?"#Show some emotion"
 }
 
 
@@ -32,12 +33,13 @@ sayings = {
 recognized = False
 message = "Log in with face"
 emotionData = None
-
+emotionVal = ""
+personVal = ""
 message2 = ""
 
 emotions = {}
 def set_emotion(emotion):
-    global emotions
+    global emotions, emotionVal
     emotions['anger'] = emotion.anger
     emotions['contempt'] = emotion.contempt
     emotions['disgust'] = emotion.disgust
@@ -51,6 +53,7 @@ def set_emotion(emotion):
         val = 'anger'
     if val =='fear':
         val = 'surprise'
+    emotionVal = val
 
     return sayings[val]
 
@@ -72,7 +75,7 @@ def authenticateClient():
 #function to check if person in image
 def test_image():
     #declare global message variable
-    global message, emotionData, message2
+    global message, emotionData, message2, personVal
     #Get image from file
     group_photo = 'saved_img.jpg'
     IMAGES_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)))
@@ -98,12 +101,15 @@ def test_image():
                 #Change message based on who it detected
                 if person.candidates[0].person_id == "6b3bd011-5a79-4d07-a8d9-9e0bf44be947":
                     message = 'Welcome Vineet'
+                    personVal = 'Vineet'
                     return True
                 elif person.candidates[0].person_id == "dbde91bc-673d-4c03-9c03-8fb2072478ce":
                     message = 'Welcome Sam'
+                    personVal = 'Sam'
                     return True
                 elif person.candidates[0].person_id == "472c66f3-9508-47d1-bec3-33dea996b5e7":
                     message = 'Welcome David'
+                    personVal = 'David'
                     return True
 
             else:
@@ -227,9 +233,7 @@ if __name__ == "__main__":
     tick()
 
     #Start thread to detect face and update login message
-    t1 = threading.Thread(target=find_face)
-    t1.start()
-
+    
 
 
     m.bind('q', open_fruit_ninja)
@@ -239,6 +243,7 @@ if __name__ == "__main__":
     num.pack()
     m.update_idletasks()
     m.update()
+    find_face()
     speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config)
     def recognizeSpeech():
         result = speech_recognizer.recognize_once()
@@ -254,20 +259,20 @@ if __name__ == "__main__":
                 for document in response.documents:
                     print("Document Id: ", document.id, ", Sentiment Score: ",
                         "{:.2f}".format(document.score))
+                    emotionFile = open('emotions.csv', 'a+')
+                    emotionFile.write("\n{},{},{},{:.2f}".format(datetime.now(),personVal, emotionVal, document.score))
+                    emotionFile.close()
 
-            except Exception as err:
-                print("Encountered exception. {}".format(err))
+            except Exception as error:
+                print("Encountered exception. {}".format(error))
         elif result.reason == speechsdk.ResultReason.NoMatch:
-            print("No speech could be recognized: {}".format(result.no_match_details))
+            print("No speech could be recognized")
         elif result.reason == speechsdk.ResultReason.Canceled:
-            cancellation_details = result.cancellation_details
-            print("Speech Recognition canceled: {}".format(cancellation_details.reason))
-            if cancellation_details.reason == speechsdk.CancellationReason.Error:
-                print("Error details: {}".format(cancellation_details.error_details))
+            print("Speech Recognition canceled")
 
     # threading.Thread(target=recognizeSpeech).start()
-
     def listen():
+        recognizeSpeech()
         while True:
             try:
                 result = speech_recognizer.recognize_once()
@@ -291,6 +296,7 @@ if __name__ == "__main__":
 
 
     threading.Thread(target=listen).start()
+    
 
     num.destroy()
 
