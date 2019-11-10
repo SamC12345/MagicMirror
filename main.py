@@ -12,17 +12,16 @@ from urllib.parse import urlparse
 from azure.cognitiveservices.vision.face import FaceClient
 from msrest.authentication import CognitiveServicesCredentials
 from azure.cognitiveservices.vision.face.models import TrainingStatusType, Person, SnapshotObjectType, OperationStatusType
-
+import combo
 
 sayings = {
     'disgust' : 'You look disgusted.\nDon\'t be.',
     'anger' : "Life is beautiful. Don't be angry",
-    'happiness' : "You're looking happy today.\nThat's great.\nLife is amazing",
+    'happiness' : "You're looking happy today.\nThat's great.\nLife is amazing\nJust Like you",
     'sadness' : "Don't be so sad.\nBe glad!",
     'surprise' : "Surprise motherf*ker!",
     'neutral' : "Show some emotion"
 }
-
 
 #Three global variables 
 recognized = False
@@ -89,6 +88,10 @@ def test_image():
                 elif person.candidates[0].person_id == "dbde91bc-673d-4c03-9c03-8fb2072478ce":
                     message = 'Welcome Sam'
                     return True
+                elif person.candidates[0].person_id == "472c66f3-9508-47d1-bec3-33dea996b5e7":
+                    message = 'Welcome David'
+                    return True
+
             else:
                 message = 'Person not recognized'
                 print("Person can't be identified")
@@ -119,6 +122,7 @@ def find_face():
         # Code for bounding boxes on faces
         # for (x, y, w, h) in faces:
         #     cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+
         if key == 27:
             break
     # Change logging message on screen through global var
@@ -127,8 +131,6 @@ def find_face():
     # Release carmera vars
     cap.release()
     cv2.destroyAllWindows()
-
-
 
 
 #Main code to display UI
@@ -192,13 +194,20 @@ temperature2.pack()
 myvar=Label(m, text = time_string, compound = CENTER)
 
 myvar.place(x=0, y=0)
-print("hi")
+print("hifvojk")
 #Tick clock
 tick()
 
 #Start thread to detect face and update login message
 t1 = threading.Thread(target=find_face)
 t1.start()
+
+def key(event):
+    if event.char == 'q':
+        print(event.char)
+        combo.startFruitNinja()
+
+m.bind_all('<Key>', key)
 
 m.mainloop()
 
