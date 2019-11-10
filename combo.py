@@ -21,12 +21,12 @@ class Item:
         if random.randint(0,1)==0:#move right
             self.x = random.randint(0, int(display_width/2))
             self.y = display_height
-            self.yvel = random.randint(-22,17)
+            self.yvel = random.randint(-22,-19)
             self.xvel = random.randint(3,6)
         else:
             self.x = random.randint(int(display_width/2), display_width)
             self.y = display_height
-            self.yvel = random.randint(-22,-17)
+            self.yvel = random.randint(-22,-19)
             self.xvel = random.randint(-6,-3)
         if image != "pineapple.png" and image != "pear.png":
             self.width=200
@@ -196,7 +196,7 @@ def game(xyq, otherxyq):
                 score+=1
                 removeItems.append(item)
         for item in removeItems:
-            if item.isCollided(cursorx,cursory) or item.isCollided(othercursorx,othercursory):
+            if (item.isCollided(cursorx,cursory) or item.isCollided(othercursorx,othercursory)) and item.isBomb:
                 nukes.add(Explosion(item.x, item.y))
             objects.remove(item)
 
