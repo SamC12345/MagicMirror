@@ -4,7 +4,7 @@ import sys
 import time
 import requests
 import json
-from PIL import ImageTk, Image
+# from PIL import ImageTk, Image
 import threading
 import cv2
 import asyncio, io, glob, os, uuid
@@ -12,18 +12,18 @@ from urllib.parse import urlparse
 from azure.cognitiveservices.vision.face import FaceClient
 from msrest.authentication import CognitiveServicesCredentials
 from azure.cognitiveservices.vision.face.models import TrainingStatusType, Person, SnapshotObjectType, OperationStatusType
-import combo
+import combo, emotiongame
 
 sayings = {
     'disgust' : 'You look disgusted.\nDon\'t be.',
     'anger' : "Life is beautiful. Don't be angry",
     'happiness' : "You're looking happy today.\nThat's great.\nLife is amazing\nJust Like you",
     'sadness' : "Don't be so sad.\nBe glad!",
-    'surprise' : "Surprise motherf*ker!",
-    'neutral' : "Show some emotion"
+    'surprise' : "You look surprised! What's Happening?",
+    'neutral' : ""#Show some emotion"
 }
 
-#Three global variables 
+#Three global variables
 recognized = False
 message = "Log in with face"
 emotionData = None
@@ -65,7 +65,7 @@ def test_image():
     test_image_array = glob.glob(os.path.join(IMAGES_FOLDER, group_photo))
     image = open(test_image_array[0], 'r+b')
 
-        
+
     PERSON_GROUP_ID = 'unique-group-id3'
     #Send faces to API
     face_ids = []
@@ -132,82 +132,89 @@ def find_face():
     cap.release()
     cv2.destroyAllWindows()
 
+def qpress(event):
+    # if event.char == 'q':
+    print("Starting Fruit Ninja")
+    combo.startFruitNinja()
 
-#Main code to display UI
-url = "https://api.darksky.net/forecast/cccddf3bdea1714ab4fb33a10653811f/40.7357,-74.1724"
-response = requests.get(url)
-val = response.json()['currently']
-def close(event):
-    m.destroy()
+def wpress(event):
+    # if event.char == 'q':
+    print("Starting Fruit Ninja")
+    emotiongame.startGame()
 
-#Update clock
-time_string = ""
-def tick():
-    time_string=time.strftime("%I:%M")
-    clock.config(text=time_string)
-    clock.after(200,tick)
+if __name__ == "__main__":
+    #Main code to display UI
+    url = "https://api.darksky.net/forecast/cccddf3bdea1714ab4fb33a10653811f/40.7357,-74.1724"
+    response = requests.get(url)
+    val = response.json()['currently']
+    def close(event):
+        m.destroy()
 
-#Create root
-m = Tk()
-m.attributes("-fullscreen", True)
-m.configure(background='black')
-m.bind('<Escape>', close)
+    #Update clock
+    time_string = ""
+    def tick():
+        time_string=time.strftime("%I:%M")
+        clock.config(text=time_string)
+        clock.after(200,tick)
 
-#Make left and right frame
-mid = Frame(m)
-mid.pack()
-mid.config(background='black')
-left = Frame(m)
-left.pack(side=LEFT)
-right = Frame(m)
-right.pack(side=RIGHT)
+    #Create root
+    m = Tk()
+    m.attributes("-fullscreen", True)
+    m.configure(background='black')
+    m.bind('<Escape>', close)
 
-#Clock label
-clock=Label(mid, font=("times", 80, "bold"), bg="black", fg="white")
-clock.config(anchor=CENTER)
-clock.pack()
-right.config(background='black')
+    #Make left and right frame
+    mid = Frame(m)
+    mid.pack()
+    mid.config(background='black')
+    left = Frame(m)
+    left.pack(side=LEFT)
+    right = Frame(m)
+    right.pack(side=RIGHT)
 
-#Show face to log in
-log = Label(mid, font=("times", 30, "bold"), bg="black", fg="white", text=message)
-log.config(anchor=CENTER)
-log.pack()
+    #Clock label
+    clock=Label(mid, font=("times", 80, "bold"), bg="black", fg="white")
+    clock.config(anchor=CENTER)
+    clock.pack()
+    right.config(background='black')
 
-log2 = Label(mid, font=("times", 30, "bold"), bg="black", fg="white", text=message2)
-log2.config(anchor=CENTER)
-log2.pack()
+    #Show face to log in
+    log = Label(mid, font=("times", 30, "bold"), bg="black", fg="white", text=message)
+    log.config(anchor=CENTER)
+    log.pack()
 
-#Score Label
-score = Label(left,font=("times", 50, "bold"), bg="black", fg="white", text="High Score:\n0")
-score.pack(anchor=E)
-#Weather stuff
-# image = ImageTk.PhotoImage(Image.open("{}.png".format(val['icon'])))
-# canvas = Canvas(right, width = 300, height = 300) 
-# canvas.pack()
-# canvas.create_image(1,1,anchor=NW,  image=image)   
-# Label to display temperature
-temperature = Label(right, font=("times", 50, 'bold'), bg='black', fg='white', text=val['summary'])
-temperature.pack()
-temperature2 = Label(right, font=("times", 30, 'bold'), bg='black', fg='white', text="{0:.0f}°".format(val['temperature']))
-temperature2.pack()
+    log2 = Label(mid, font=("times", 30, "bold"), bg="black", fg="white", text=message2)
+    log2.config(anchor=CENTER)
+    log2.pack()
 
-myvar=Label(m, text = time_string, compound = CENTER)
+    #Score Label
+    score = Label(left,font=("times", 50, "bold"), bg="black", fg="white", text="High Score:\n0")
+    score.pack(anchor=E)
+    #Weather stuff
+    # image = ImageTk.PhotoImage(Image.open("{}.png".format(val['icon'])))
+    # canvas = Canvas(right, width = 300, height = 300)
+    # canvas.pack()
+    # canvas.create_image(1,1,anchor=NW,  image=image)
+    # Label to display temperature
+    temperature = Label(right, font=("times", 50, 'bold'), bg='black', fg='white', text=val['summary'])
+    temperature.pack()
+    temperature2 = Label(right, font=("times", 30, 'bold'), bg='black', fg='white', text="{0:.0f}°".format(val['temperature']))
+    temperature2.pack()
 
-myvar.place(x=0, y=0)
-print("hifvojk")
-#Tick clock
-tick()
+    myvar=Label(m, text = time_string, compound = CENTER)
 
-#Start thread to detect face and update login message
-t1 = threading.Thread(target=find_face)
-t1.start()
+    myvar.place(x=0, y=0)
+    print("hifvojk")
+    #Tick clock
+    tick()
 
-def key(event):
-    if event.char == 'q':
-        print(event.char)
-        combo.startFruitNinja()
+    #Start thread to detect face and update login message
+    t1 = threading.Thread(target=find_face)
+    t1.start()
 
-m.bind_all('<Key>', key)
 
-m.mainloop()
 
+    m.bind('q', qpress)
+    m.bind('w', wpress)
+
+    m.mainloop()

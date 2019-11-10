@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import threading
 import time
-import keyboard
+# import keyboard
 import math
 import os
 from multiprocessing import Process, Queue
@@ -38,7 +38,7 @@ class Item:
         image = pygame.image.load(image)
         image = pygame.transform.scale(image, (self.width, self.height))
         self.image = image
-        
+
 
     def move(self):
         self.x += self.xvel
@@ -60,7 +60,7 @@ class Explosion:
         image = pygame.image.load("nuke.png")
         image = pygame.transform.scale(image, (self.width, self.height))
         self.image = image
-        
+
 
     def decreaseSize(self):
         self.width -=1
@@ -83,14 +83,14 @@ def game(xyq, otherxyq):
     othercursor = pygame.transform.scale(othercursor, (50,50))
     othercursorx,othercursory=0,0
 
-    # define the RGB value for white, 
-    #  green, blue colour . 
-    white = (255, 255, 255) 
-    green = (0, 255, 0) 
-    black = (0, 0, 0) 
-    font = pygame.font.Font('freesansbold.ttf', 48) 
+    # define the RGB value for white,
+    #  green, blue colour .
+    white = (255, 255, 255)
+    green = (0, 255, 0)
+    black = (0, 0, 0)
+    font = pygame.font.Font('freesansbold.ttf', 48)
     square = pygame.image.load("redsquare.png")
-    
+
     try:
         # time.sleep(2)
         limits={"tl":0, "tr":0, "bl":0, "br":0}
@@ -100,11 +100,11 @@ def game(xyq, otherxyq):
                 if event.type == pygame.QUIT:
                     raise KeyboardInterrupt
             print('Put hand in ' +pos+' corner')
-            # create a text suface object, 
-            # on which text is drawn on it. 
-            text = font.render('Put hand in each corner', True, green, black) 
+            # create a text suface object,
+            # on which text is drawn on it.
+            text = font.render('Put hand in each corner', True, green, black)
             textRect = text.get_rect()
-            textRect.center = (display_width // 2,display_height // 2) 
+            textRect.center = (display_width // 2,display_height // 2)
             disp.blit(text,textRect)
             disp.blit(square, cornerCords[pos])
 
@@ -154,14 +154,14 @@ def game(xyq, otherxyq):
         m, c = lstsq(A, y_coords)[0]
         outX=int(m*x+c)
         return (outX,outY)
-    
+
     crashed = False
     objects = set()
     nukes=set()
     score=0
     while not crashed:
         newi = random.randint(0,200)
-        
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 crashed = True
@@ -174,15 +174,15 @@ def game(xyq, otherxyq):
             objects.add(Item("orange.png"))
         elif newi == 11:
             objects.add(Item("bomb.png"))
-               
+
         disp.fill((0, 0, 0))
         # disp.blit(cursor, (cursorx,cursory))
         # disp.blit(othercursor, (othercursorx,othercursory))
-        text = font.render('Score: '+str(score), True, green, black) 
+        text = font.render('Score: '+str(score), True, green, black)
         textRect = text.get_rect()
-        textRect.center = (display_width // 2,display_height // 2) 
+        textRect.center = (display_width // 2,display_height // 2)
         disp.blit(text,textRect)
-        
+
         for item in objects:
                 item.move()
                 disp.blit(item.image, (item.x, item.y))
@@ -205,7 +205,7 @@ def game(xyq, otherxyq):
             if item.decreaseSize():
                 removeItems.append(item)
             disp.blit(item.image, (item.x, item.y))
-        
+
         for item in removeItems:
             nukes.remove(item)
 
@@ -259,7 +259,7 @@ def video(xyq, otherxyq):
             frame = cv2.flip(frame,1)
             median = cv2.medianBlur(frame,1)
             hsv = cv2.cvtColor(median, cv2.COLOR_BGR2HSV)
-            
+
             # blur = cv2.GaussianBlur(hsv,(5,5), 100000)
             # lower = np.array([140, 10, 50])
             # upper = np.array([179,255,200])
@@ -274,11 +274,11 @@ def video(xyq, otherxyq):
             kernel = np.ones((5, 5), np.uint8)
             # dilate = cv2.dilate(otherMask,kernel,iterations = 1)
             opening = cv2.morphologyEx(otherNewMask, cv2.MORPH_OPEN, kernel)
-            
+
             # cv2.medianBlur(otherMask, 3)
             # blurMask=cv2.GaussianBlur(otherMask,(45,45), 100000)
 
-            
+
             contours, _ = cv2.findContours(opening, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             if len(contours) !=0:
                 cv2.drawContours(frame, contours, -1, (255, 0, 0), 3)
@@ -310,17 +310,17 @@ def video(xyq, otherxyq):
             # cv2.imshow('otherNewMask',otherNewMask)
             # cv2.imshow('otherMask',otherMask)
             # cv2.imshow ("Frame", frame)
-            
+
             # c = cv2.waitKey(7) % 0x100
             # if c == 27 or c == 10:
             #     break
-    
+
     except KeyboardInterrupt:
         pass
     cap.release()
     cv2.destroyAllWindows()
     return
-        
+
 def getFrames(frameQueue):
     cap = cv2.VideoCapture(1)
     cap.set(3,1280);
@@ -347,5 +347,3 @@ def startFruitNinja():
 if __name__=="__main__":
     startFruitNinja()
 # video()
-
-
