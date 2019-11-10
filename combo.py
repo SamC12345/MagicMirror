@@ -70,7 +70,7 @@ def game(xyq, otherxyq):
     white = (255, 255, 255) 
     green = (0, 255, 0) 
     black = (0, 0, 0) 
-    font = pygame.font.Font('freesansbold.ttf', 32) 
+    font = pygame.font.Font('freesansbold.ttf', 48) 
     square = pygame.image.load("redsquare.png")
     
     try:
@@ -207,13 +207,12 @@ def game(xyq, otherxyq):
             print("----")
             print(newCord)
             print(othercursorx,othercursory)
-            print(count)
         pygame.display.update()
         clock.tick(60)
     pygame.quit()
     return
 
-def video(xyq, otherxyq, frameQueue):
+def video(xyq, otherxyq):
     prevTime=time.time()
     cap = cv2.VideoCapture(1)
     cap.set(3,1280);
@@ -306,19 +305,15 @@ def getFrames(frameQueue):
     cap.release()
     return
 
-
-if __name__=="__main__":
+def startFruitNinja():
     xyq=Queue()
     otherxyq=Queue()
-    frameQueue = Queue()
     Process(target = game, args=(xyq,otherxyq,)).start()
     # Process(target = getFrames, args=(frameQueue,)).start()
-    Process(target = video, args=(xyq,otherxyq,frameQueue,)).start()
-    # Process(target = video, args=(xyq,frameQueue,)).start()
-    # Process(target = video, args=(xyq,frameQueue,)).start()
-    # Process(target = video, args=(xyq,frameQueue,)).start()
-    # Process(target = video, args=(xyq,frameQueue,)).start()
-    # Process(target = video, args=(xyq,frameQueue,)).start()
+    Process(target = video, args=(xyq,otherxyq,)).start()
+
+if __name__=="__main__":
+    startFruitNinja()
 # video()
 
 
